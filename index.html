@@ -648,30 +648,45 @@ function validateTicket() {
   renderAdmin();
 }
 
-function quickValidate(id) {
-  const p = participants.find(x => x.id === id);
-  if (p && !p.validated) {
+function quickValidate(input) {
+  const search = input.trim().toUpperCase();
+  if (!search) return;
+
+  // On cherche soit par les 4 derniers caractères de l'ID, soit par le Nom
+  const p = participants.find(x => 
+    x.id.endsWith(search) || 
+    x.name.toUpperCase().includes(search)
+  );
+  
+  if (!p) {
+    alert("❌ Aucun participant trouvé pour : " + input);
+    return;
+  }
+
+  if (p.validated) {
+    alert("⚠️ ATTENTION : Le ticket de " + p.name + " a déjà été validé !");
+  } else {
     p.validated = true;
     save();
     renderAdmin();
-
-    // On prévient ton Google Sheets que la personne vient d'arriver
+    
+    // Envoi à Google Sheets pour le suivi en direct
     fetch('https://script.google.com/macros/s/AKfycbxRy7kLoWiKpacMuhNMRai52cf-fpQcS7oMxNT59-C7zELiycbuXSQ3D_RsSYVSbYG/exec', {
       method: 'POST',
       mode: 'no-cors',
-      body: JSON.stringify({
-        action: 'CHECK-IN',
-        id: p.id,
-        name: p.name,
-        arrival: new Date().toLocaleString('fr-FR')
+      body: JSON.stringify({ 
+        action: 'CHECK-IN', 
+        id: p.id, 
+        arrival: new Date().toLocaleString('fr-FR') 
       })
     });
-    alert("✅ Entrée validée pour : " + p.name);
-  } else if (p && p.validated) {
-    alert("⚠️ Ce ticket a déjà été scanné !");
+    
+    alert("✅ VALIDÉ : " + p.name + " peut entrer.");
   }
+  
+  // On vide la case après validation pour le suivant
+  document.querySelector('input[placeholder*="Ex: FCC-24"]').value = "";
 }
-
 function sendWA(id) {
   const p = participants.find(x=>x.id===id);
   if(!p) return;
