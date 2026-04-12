@@ -376,11 +376,11 @@ tr:hover td { background:#FFFBF5; }
 <script>
 // ===== CONFIG =====
 const WA_GROUPS = {
-  '09h00 – 12h00': 'https://chat.whatsapp.com/D8gQfO5yiEzJJYBapBPAlh?mode=gi_t',
-  '12h00 – 15h00': 'https://chat.whatsapp.com/Lm9QpatsBJJID4HB9298l9?mode=gi_t',
-  '15h00 – 17h00': 'https://chat.whatsapp.com/FI0p1VQOjXh26xKXp4L1Bv?mode=gi_t'
+  "09h–12h": "https://chat.whatsapp.com/D8gQfO5yiEzJJYBapBPAlh",
+  "12h–15h": "https://chat.whatsapp.com/Lm9QpatsBJJID4HB9298l9",
+  "15h–17h": "https://chat.whatsapp.com/FI0p1VQOjXh26xKXp4L1Bv"
 };
-const SLOTS = ['09h00 – 12h00','12h00 – 15h00','15h00 – 17h00'];
+const SLOTS = ["09h–12h", "12h–15h", "15h–17h"];
 const MAX = 300;
 const DAYS = ['24','25'];
 const DAY_LABELS = { '24':'Vendredi 24 Avril 2026', '25':'Samedi 25 Avril 2026' };
@@ -515,13 +515,9 @@ function showError(msg) {
   e.textContent=msg; e.style.display='block';
 }
 
+
 // TICKET
 function renderTicket() {
-  // Refresh from storage
-  if(currentTicket) {
-    const fresh = participants.find(p=>p.id===currentTicket.id);
-    if(fresh) currentTicket = fresh;
-  }
   if(!currentTicket) {
     document.getElementById('ticket-empty').style.display='block';
     document.getElementById('ticket-display').style.display='none';
@@ -536,25 +532,30 @@ function renderTicket() {
   document.getElementById('t-phone').textContent = currentTicket.phone;
   document.getElementById('t-id').textContent = currentTicket.id;
 
+  // On affiche "Validé" par défaut pour tout le monde maintenant
   const statusEl = document.getElementById('t-status');
-  statusEl.innerHTML = currentTicket.validated
-    ? '<span class="badge badge-ok">✓ Validé</span>'
-    : '<span class="badge badge-pend">⏳ En attente de validation</span>';
+  statusEl.innerHTML = '<span class="badge badge-ok">✓ Inscription Confirmée</span>';
 
+  // Génération du QR Code
   const qrDiv = document.getElementById('qrcode');
   qrDiv.innerHTML='';
   new QRCode(qrDiv, { text: currentTicket.id, width:150, height:150,
     colorDark:'#3B1F0A', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
 
+  // SECTION WHATSAPP : Toujours active et avec le bon lien
   const waSection = document.getElementById('wa-section');
-  const waLink = WA_GROUPS[currentTicket.slot];
+  const waLink = WA_GROUPS[currentTicket.slot] || "#";
+  
   waSection.innerHTML = `
-    <p style="text-align:center;font-size:13px;color:#5A2D10;margin-bottom:10px;font-weight:600;">👇 Clique sur ce lien pour rejoindre ton groupe WhatsApp :</p>
-    <p style="text-align:center;word-break:break-all;">
-      <a href="${waLink}" style="color:#25D366;font-size:14px;font-weight:700;text-decoration:underline;" target="_blank" rel="noopener noreferrer">${waLink}</a>
-    </p>`;
+    <div style="background:#e7fce3; padding:15px; border-radius:10px; border:1px solid #25D366; margin-top:10px;">
+      <p style="text-align:center;font-size:14px;color:#128c7e;margin-bottom:12px;font-weight:700;">
+        🎉 Félicitations ! Rejoins ton groupe officiel :
+      </p>
+      <a href="${waLink}" target="_blank" style="display:block; text-align:center; background:#25D366; color:white; padding:12px; border-radius:8px; text-decoration:none; font-weight:bold; font-size:15px; box-shadow: 0 4px 10px rgba(37,211,102,0.3);">
+        🟢 INTEGRER LE GROUPE WHATSAPP
+      </a>
+    </div>`;
 }
-
 // ADMIN
 function adminLogin() {
   const pass = document.getElementById('admin-pass').value;
