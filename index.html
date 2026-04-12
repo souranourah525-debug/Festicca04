@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FESTICCA 2026 – Inscription</title>  
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
 <style>
 :root {
   --choco: #3B1F0A;
@@ -739,7 +740,22 @@ function exportCSV() {
   a.download='participants_FESTICCA_2026.csv';
   a.click();
 }
+// --- CONNEXION FIREBASE ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDS3KRhQO8HcrZ4S2qRX5hQmNwhRO8pABM",
+  authDomain: "festica2026.firebaseapp.com",
+  databaseURL: "https://festica2026-default-rtdb.firebaseio.com",
+  projectId: "festica2026",
+  storageBucket: "festica2026.firebasestorage.app",
+  messagingSenderId: "419393372805",
+  appId: "1:419393372805:web:e6985b5440603577fd5fec"
+};
 
+// On initialise Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
 // INIT
 renderHome();
 </script>
