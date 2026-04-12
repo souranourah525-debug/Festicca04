@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FESTICCA 2026 – Inscription</title>
+<title>FESTICCA 2026 – Inscription</title>  
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
@@ -576,19 +576,48 @@ function adminLogin() {
 }
 
 function renderAdmin() {
+  const statsContainer = document.getElementById('admin-stats');
+  const listContainer = document.getElementById('admin-list');
+  
+  if (!statsContainer || !listContainer) return;
+
+  // 1. Mise à jour des compteurs en haut
   const total = participants.length;
-  const validated = participants.filter(p=>p.validated).length;
-  const totalCap = SLOTS.length * DAYS.length * MAX;
-  let html = `
+  const valides = participants.filter(p => p.validated).length;
+  const placesRestantes = 2000 - total;
+
+  statsContainer.innerHTML = `
     <div class="stat-card"><div class="stat-num">${total}</div><div class="stat-label">Total inscrits</div></div>
-    <div class="stat-card"><div class="stat-num">${validated}</div><div class="stat-label">Validés entrée</div></div>
-    <div class="stat-card"><div class="stat-num">${totalCap-total}</div><div class="stat-label">Places restantes</div></div>`;
-  SLOTS.forEach(slot => {
-    const cnt = participants.filter(p=>p.slot===slot).length;
-    html += `<div class="stat-card"><div class="stat-num">${cnt}</div><div class="stat-label">${slot}</div></div>`;
+    <div class="stat-card"><div class="stat-num">${valides}</div><div class="stat-label">Validés entrée</div></div>
+    <div class="stat-card"><div class="stat-num">${placesRestantes}</div><div class="stat-label">Places restantes</div></div>
+  `;
+
+  // 2. Mise à jour de la liste des gens
+  if (total === 0) {
+    listContainer.innerHTML = '<tr><td colspan="6" style="text-align:center;">Chargement des données...</td></tr>';
+    return;
+  }
+
+  listContainer.innerHTML = '';
+  // On affiche les plus récents en premier
+  [...participants].reverse().forEach(p => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.id}</td>
+      <td>${p.name}</td>
+      <td>${p.phone || '-'}</td>
+      <td>${p.slot || '-'}</td>
+      <td>
+        <span class="badge ${p.validated ? 'bg-success' : 'bg-warning text-dark'}">
+          ${p.validated ? '✅ Validé' : '⏳ Attente'}
+        </span>
+      </td>
+      <td>
+        ${!p.validated ? `<button onclick="quickValidate('${p.id}')" class="btn btn-sm btn-success">Valider</button>` : ''}
+      </td>
+    `;
+    listContainer.appendChild(tr);
   });
-  document.getElementById('admin-stats').innerHTML = html;
-  renderTable();
 }
 
 function renderTable() {
