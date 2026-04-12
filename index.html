@@ -492,6 +492,8 @@ function submitRegistration() {
   participants.push(ticket);
   save();
 
+ // ENVOI VERS FIREBASE (INSTANTANÉ)
+db.ref('participants/' + ticket.id).set(ticket);
   // ENVOI VERS TON GOOGLE SHEETS
   fetch('https://script.google.com/macros/s/AKfycbxRy7kLoWiKpacMuhNMRai52cfO-fpQcS7oMxNT59-C7zELiycbuXSQ3D_RsSYVSbYG/exec', {
     method: 'POST',
