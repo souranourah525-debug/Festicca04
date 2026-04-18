@@ -748,7 +748,17 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
+
+// On définit la base de données
 const db = firebase.database();
+
+// On écoute les participants
+db.ref('participants').on('value', (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        participants = Object.values(data);
+    }
+});
 // INIT
 renderHome();
 </script>
