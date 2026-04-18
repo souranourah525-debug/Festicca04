@@ -733,7 +733,8 @@ function exportCSV() {
   a.download='participants_FESTICCA_2026.csv';
   a.click();
 }
-// --- CONNEXION FIREBASE ---
+
+      // --- CONNEXION FIREBASE ---
 const firebaseConfig = {
   apiKey: "AIzaSyDS3KRhQO8HcrZ4S2qRX5hQmNwhRO8pABM",
   authDomain: "festica2026.firebaseapp.com",
@@ -744,21 +745,38 @@ const firebaseConfig = {
   appId: "1:419393372805:web:e6985b5440603577fd5fec"
 };
 
-// On initialise Firebase
+// Initialisation de Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// On définit la base de données
+// DÉFINITION DE LA BASE DE DONNÉES
 const db = firebase.database();
 
-// On écoute les participants
+// --- GESTION DES DONNÉES EN TEMPS RÉEL ---
+// Ce bloc surveille ta base. Si tu supprimes sur Firebase, le site se vide.
 db.ref('participants').on('value', (snapshot) => {
     const data = snapshot.val();
+    
     if (data) {
-        participants = Object.values(data);
+        // S'il y a des données, on les transforme en liste
+        participants = Object.keys(data).map(key => ({
+            ...data[key],
+            firebaseKey: key // On garde la clé pour pouvoir supprimer si besoin
+        }));
+    } else {
+        // Si Firebase est vide (null), on vide la liste sur le site
+        participants = [];
+    }
+
+    // On met à jour l'affichage du tableau Admin
+    if (typeof updateTable === "function") {
+        updateTable();
     }
 });
+
+// --- FIN DU SCRIPT ---
+</script>
 // INIT
 renderHome();
 </script>
