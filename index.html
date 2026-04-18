@@ -379,7 +379,7 @@ tr:hover td { background:#FFFBF5; }
 const WA_GROUPS = {
   '09h00 – 12h00': 'https://chat.whatsapp.com/D8gQfO5yiEzJJYBapBPAlh?mode=gi_t',
   '12h00 – 15h00': 'https://chat.whatsapp.com/Lm9QpatsBJJID4HB9298l9?mode=gi_t',
-  '15h00 – 18h00': 'https://chat.whatsapp.com/FI0p1VQOjXh26xKXp4L1Bv?mode=gi_t'
+  '15h00 – 17h00': 'https://chat.whatsapp.com/FI0p1VQOjXh26xKXp4L1Bv?mode=gi_t'
 };
 const SLOTS = ['09h00 – 12h00','12h00 – 15h00','15h00 – 18h00'];
 const MAX = 300;
@@ -452,7 +452,7 @@ function selectSlot(slot) {
 }
 
 function genID(day, slot) {
-  const code = {'09h00 – 12h00':'A','12h00 – 15h00':'B','15h00 – 18h00':'C'}[slot]||'X';
+  const code = {'09h00 – 12h00':'A','12h00 – 15h00':'B','15h00 – 17h00':'C'}[slot]||'X';
   const rand = Math.random().toString(36).substring(2,8).toUpperCase();
   return `FCC-${day}-${code}${rand}`;
 }
@@ -693,7 +693,19 @@ function quickValidate(input) {
     save();
     renderAdmin();
     
+    // Envoi à Google Sheets pour le suivi en direct
+    fetch('https://script.google.com/macros/s/AKfycbxRy7kLoWiKpacMuhNMRai52cf-fpQcS7oMxNT59-C7zELiycbuXSQ3D_RsSYVSbYG/exec', {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ 
+        action: 'CHECK-IN', 
+        id: p.id, 
+        arrival: new Date().toLocaleString('fr-FR') 
+      })
+    });
     
+    alert("✅ VALIDÉ : " + p.name + " peut entrer.");
+  }
   
   // On vide la case après validation pour le suivant
   document.querySelector('input[placeholder*="Ex: FCC-24"]').value = "";
